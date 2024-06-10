@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room - ChatApp</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;1,200;1,300;1,400&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 6px;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-height: 100vh;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            flex-direction: column;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            padding: 10px;
+            margin: 0;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            margin: 10px 0;
+            padding: 30px;
+            width: 500px;
+            
+            backdrop-filter: blur(10px);
+        }
+        .title {
+            font-size: 1.5em;
+            margin: 20px 0;
+            color: #fff;
+        }
+        .link {
+            font-size: 14px;
+            margin-left: 20px;
+            color: #fff;
+            background-color: #45a049;
+            padding: 8px 10px;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .link:hover {
+            background-color: #3e8e41;
+        }
+        #display {
+            border: 2px solid #dedede;
+            background-color: rgba(236, 229, 229, 0.842);
+            border-radius: 5px;
+            width: 500px;
+            height: 450px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding: 20px;
+            
+            color: #fff;
+        }
+        .darker {
+            border-color: #ccc;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            word-break: break;
+            
+            
+        }
+        .darker p {
+            line-height: 25px;
+            margin: 5px 0;
+        }
+        .darker span {
+            color: #999;
+        }
+        .darker b {
+            text-transform: capitalize;
+            font-style: italic;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            
+        }
+        input[type="text"]::placeholder {
+            color: #ddd;
+        }
+        input[type="text"]:focus {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            padding: 30px;
+            
+        }
+    </style>
+    <!-- AJAX -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Récupération des messages en ajax -->
+    <script>
+        $(document).ready(function(){
+          var display = $("#display");
+          setInterval(function(){
+              $.ajax({
+                  type: 'GET',
+                  url : "/getMessages/{{room}}/",
+                  success: function(response){
+                      console.log(response);
+                      var isAtBottom = display.scrollTop() + display.innerHeight() >= display[0].scrollHeight;
+                      $("#display").empty();
+                      for (var key in response.messages)
+                      {
+                          var rawDate = new Date(response.messages[key].date);
+                          var formattedDate = rawDate.toLocaleString('fr-FR', {day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit'});
+                          var temp="<div class='darker'><b>"+response.messages[key].user+"</b><p>"+response.messages[key].value+"</p><span>"+formattedDate+"</span></div>";
+                          $("#display").append(temp);
+                      }
+                      // Scroll to the bottom of the chat window if the user is already at the bottom
+                      if (isAtBottom) {
+                          $("#display").scrollTop($("#display")[0].scrollHeight);
+                      }
+                  },
+                  error: function(response){
+                      alert('An error occured')
+                  }
+              });
+          },500);
+      });
+      </script>
+    <h2 class="title">{{room}} - Groupe <a class="link" href="{% url 'home' %}">Change Group</a></h2>
+    <div id="display">
+        <!-- Les messages de chat seront ajoutés ici -->
+        <p>Aucun message présent</p>
+    </div>
+    <div class="form-container">
+        <form id="post-form">
+            {% csrf_token %}
+            <input type="hidden" name="username" id="username" value="{{username}}">
+            <input type="hidden" name="room_id" id="room_id" value="{{room_details.id}}">
+            <input type="text" name="message" id="message" placeholder="Type a message..." required>
+            <input type="submit" value="Send">
+        </form>
+    </div>
+    <script type="text/javascript">
+        // pour soumettre le formulaire en ajax
+        $(document).on('submit','#post-form',function(e){
+            e.preventDefault();
+            $.ajax({
+              type:'POST',
+              url:'/send',
+              data:{
+                  username:$('#username').val(),
+                  room_id:$('#room_id').val(),
+                  message:$('#message').val(),
+                csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+              },
+            //la réponse HTTP pour signaler que le message a été envoyé avec succès
+              success: function(data){
+               // alert(data)
+              }
+            });
+            document.getElementById('message').value = ''
+          });
+    </script>
+</body>
+</html>

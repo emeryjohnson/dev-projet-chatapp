@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - ChatApp</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: #fff;
+        }
+        .container {
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"], input[type="password"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            font-size: 1em;
+            color: #fff;
+            transition: background 0.3s ease;
+        }
+        input[type="text"]::placeholder, input[type="password"]::placeholder {
+            color: #ddd;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        input[type="submit"] {
+            background: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            padding: 15px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        input[type="submit"]:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>CHATAPP</h2>
+        <form id="post-form" method="POST" action="checkview">
+            {% csrf_token %}
+            <input type="text" name="room_name" placeholder="Room" required>
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="submit" value="Enter Room">
+        </form>
+    </div>
+</body>
+</html>
